@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 // All listings
-Route::get('listings', function() {
+Route::get('/', function() {
     return view('listings', [
         'heading' => 'Latest listings',
         'listings' => Listing::all()
