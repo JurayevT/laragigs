@@ -50,6 +50,8 @@ class ListingController extends Controller
             $formFields['logo'] = $req->file('logo')->store('logos', 'public');
         }
 
+        $formFields['user_id'] = auth()->id();
+
         Listing::create($formFields);
 
         return redirect('/')->with('message', 'Listing created successfully!');
@@ -57,12 +59,23 @@ class ListingController extends Controller
 
     public function edit(Listing $listing)
     {
+        // Make sure logged in user is owner
+        if ($listing->user_id != auth()->id()) {
+            abort(403, "Bu uchun ruxsat yo'q");
+            // return redirect('/')->with('message', 'You don\'t have permission');
+        }
         return view('listings.edit', compact('listing'));
     }
 
     // Update Listing
     public function update(Request $req, Listing $listing)
     {
+        // Make sure logged in user is owner
+        if ($listing->user_id != auth()->id()) {
+            abort(403, "Bu uchun ruxsat yo'q");
+            // return redirect('/')->with('message', 'You don\'t have permission');
+        }
+
         $formFields = $req->validate([
             'title' => 'required',
             'tags' => 'required',
@@ -85,8 +98,19 @@ class ListingController extends Controller
     // Delete Listing
     public function destroy(Listing $listing)
     {
+        // Make sure logged in user is owner
+        if ($listing->user_id != auth()->id()) {
+            abort(403, "Bu uchun ruxsat yo'q");
+        }
         $listing->delete();
 
         return redirect('/')->with('message', 'Listing deleted successfully!');
+    }
+
+    // Manage Listings
+    public function manage()
+    {
+        return view('listings.manage', ['listings' => auth()->user()
+        ->listings]);
     }
 }
